@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char nome[16];
+    int pontuacoes[12];
+    int pontuacao_final;
+} Jogador;
+
+int comparar(const void *a, const void *b) {
+    Jogador *jogadorA = (Jogador *)a;
+    Jogador *jogadorB = (Jogador *)b;
+
+    if (jogadorA->pontuacao_final != jogadorB->pontuacao_final) {
+        return jogadorB->pontuacao_final - jogadorA->pontuacao_final;
+    } else {
+        return strcmp(jogadorA->nome, jogadorB->nome);
+    }
+}
+
+int calcularPontuacaoFinal(int pontuacoes[]) {
+    qsort(pontuacoes, 12, sizeof(int), comparar);
+    int pontuacaoFinal = 0;
+
+    for (int i = 1; i < 11; i++) {
+        pontuacaoFinal += pontuacoes[i];
+    }
+
+    return pontuacaoFinal;
+}
+
+int main() {
+    int testeNumero = 1;
+
+    while (1) {
+        int J;
+        scanf("%d", &J);
+
+        if (J == 0) {
+            break;
+        }
+
+        Jogador jogadores[J];
+
+        for (int i = 0; i < J; i++) {
+            scanf("%s", jogadores[i].nome);
+
+            for (int j = 0; j < 12; j++) {
+                scanf("%d", &jogadores[i].pontuacoes[j]);
+            }
+
+            jogadores[i].pontuacao_final = calcularPontuacaoFinal(jogadores[i].pontuacoes);
+        }
+
+        qsort(jogadores, J, sizeof(Jogador), comparar);
+
+        printf("Teste %d\n", testeNumero);
+        testeNumero++;
+
+        int classificacao = 1;
+
+        for (int i = 0; i < J; i++) {
+            if (i > 0 && jogadores[i - 1].pontuacao_final == jogadores[i].pontuacao_final) {
+                // Empate com o jogador anterior
+                printf("%d %d %s\n", classificacao, jogadores[i - 1].pontuacao_final, jogadores[i - 1].nome);
+            } else {
+                printf("%d %d %s\n", classificacao, jogadores[i].pontuacao_final, jogadores[i].nome);
+            }
+
+            classificacao++;
+        }
+
+        printf("\n");
+    }
+
+    return 0;
+}
